@@ -1,7 +1,7 @@
 /*
- * Autor: Jmeno Prijmeni (login)
- * Datum:
- * Soubor:
+ * Autor: Jakub Stejskal (xstejs24)
+ * Datum: 3.5. 2017
+ * Soubor: main.c
  * Komentar:
  */ 
 #include <stdlib.h>
@@ -33,6 +33,22 @@ typedef struct{
 } PARAMS;
 
 /**
+ * Funkce pro vypsání nápvoědy.
+ */
+void printHelp()
+{
+	cerr<<"Nápověda:"<<endl;
+	cerr<<"Spuštění: ahead [-i inputFile] [-o outputFile] [-l logFile] [-h] -c|x"<<endl;
+	cerr<<"-i název souboru pro vstup"<<endl;
+	cerr<<"-o název souboru pro výstup"<<endl;
+	cerr<<"-l název souboru pro výstupní analýzu"<<endl;
+	cerr<<"-c - encoding"<<endl;
+	cerr<<"-x - decoding"<<endl;
+	cerr<<"-h nápověda"<<endl;
+}
+
+
+/**
  * Funkce ověří parametry z příkazové řádky
  * @param argc počet argumentů
  * @param argv pole argumentů
@@ -42,7 +58,6 @@ PARAMS getParams (int argc, char *argv[], PARAMS params)
 {
 	int c;
 	//ověření správnosti a počtu argumentů
-	//FUNKČNÍ POUZE PRO JEDEN INTERFACE (-i vLan1 vLan0  nejde!!!)
 	while((c = getopt(argc,argv, "i:o:l:cxh")) != -1)
 	{
 		//parametr i + interface_name
@@ -67,7 +82,7 @@ PARAMS getParams (int argc, char *argv[], PARAMS params)
 				break;
 			case 'h':
 				//TODO - print help;
-				cerr<<"Nápověda"<<endl;
+				printHelp();
 				exit(EXIT_SUCCESS);
 				break;				
 			default:
@@ -79,12 +94,12 @@ PARAMS getParams (int argc, char *argv[], PARAMS params)
 
 	params.optindNumber = optind;
 	
-	if(params.ErrParam != 0)
-		cerr<<"getParams() - Bad Argument Format!\nUsage: ahead [-i inputFile] [-o outputFile] [-l logFile] [-h] -c|x"<<endl;
+	if(params.ErrParam != 0){
+		cerr<<"getParams() - Špatný formát argumentů!"<<endl;
+		printHelp();
+	}
+		
 
-	//kontrolní výpis pro jméno interface
-	//cerr<<params.interface<<endl;
-	
 	// vrací se struktura se zpracovanými parametry
 	return params;
 }
@@ -93,7 +108,17 @@ int main(int argc, char **argv)
 {
 	PARAMS params = {-1,-1,"","","",false,false};
 	params = getParams(argc,argv,params);
-	exit(0);
+	
+	T_NODE_PTR huffmanTree;
+	if(treeInit(&huffmanTree))
+		cerr<<"Inicializace ok"<<endl;
+	else
+		exit(AHEDFail);
+	
+	dispose(&huffmanTree);
+	cerr<<"Dispose OK"<<endl;
+	
+	exit(AHEDOK);
 }
 
 

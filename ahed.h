@@ -1,7 +1,7 @@
 /*
- * Autor: Jmeno Prijmeni (login)
- * Datum:
- * Soubor:
+ * Autor: Jakub Stejskal (xstejs24)
+ * Datum: 3.5. 2017
+ * Soubor: ahead.h
  * Komentar:
  */ 
 
@@ -14,6 +14,8 @@
 #define AHEDOK 0
 #define AHEDFail -1
 
+#define ESC 0
+
 /* Datovy typ zaznamu o (de)kodovani */
 typedef struct{
 	/* velikost nekodovaneho retezce */
@@ -21,6 +23,21 @@ typedef struct{
 	/* velikost kodovaneho retezce */
 	int64_t codedSize;
 } tAHED;
+
+// Struktura pro strom
+typedef struct T_NODE {
+	struct T_NODE *parent;
+	struct T_NODE *leftChild;
+	struct T_NODE *rightChild;
+	int64_t count;
+	int64_t symbol;
+	int64_t code;
+} *T_NODE_PTR;
+
+
+
+bool treeInit(T_NODE_PTR* root);
+void dispose (T_NODE_PTR *root);
 
 
 /* Nazev:
@@ -30,10 +47,10 @@ typedef struct{
  * Parametry:
  *   ahed - zaznam o kodovani
  *   inputFile - vstupni soubor (nekodovany)
- *   outputFile - vystupní soubor (kodovany)
+ *   outputFile - vystupnï¿½ soubor (kodovany)
  * Navratova hodnota: 
  *    0 - kodovani probehlo v poradku
- *    -1 - pøi kodovani nastala chyba
+ *    -1 - pï¿½i kodovani nastala chyba
  */
 int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile);
 
@@ -45,10 +62,10 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile);
  * Parametry:
  *   ahed - zaznam o dekodovani
  *   inputFile - vstupni soubor (kodovany)
- *   outputFile - vystupní soubor (nekodovany)
+ *   outputFile - vystupnï¿½ soubor (nekodovany)
  * Navratova hodnota: 
  *    0 - dekodovani probehlo v poradku
- *    -1 - pøi dekodovani nastala chyba
+ *    -1 - pï¿½i dekodovani nastala chyba
  */
 int AHEDDecoding(tAHED *ahed, FILE *inputFile, FILE *outputFile);
 
