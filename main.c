@@ -11,7 +11,8 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <time.h>
-
+#include <bitset>
+#include <limits>
 
 #include <iostream>
 #include <fstream>
@@ -25,9 +26,9 @@ using namespace std;    // Or using std::string
 typedef struct{
 	int ErrParam;
 	int optindNumber;
-	char inputFile[255];
-	char outputFile[255];
-	char logFile[255];
+	FILE *input;
+	FILE *output;
+	FILE *log;
 	bool encode;
 	bool decode;
 } PARAMS;
@@ -64,13 +65,17 @@ PARAMS getParams (int argc, char *argv[], PARAMS params)
 		switch(c)
 		{
 			case 'i':
-				strcpy(params.inputFile, optarg);
+//				strcpy(params.inputFile, optarg);
+				if((params.input = fopen(optarg,"r")) == NULL){
+					exit(AHEDFail);
+				}
+				cerr<<"Otevřen soubor"<<endl;
 				break;
 			case 'o':
-				strcpy(params.outputFile, optarg);
+//				strcpy(params.outputFile, optarg);
 				break;
 			case 'l':
-				strcpy(params.logFile, optarg);
+//				strcpy(params.logFile, optarg);
 				break;
 			case 'c':
 				params.encode = true;
@@ -106,17 +111,23 @@ PARAMS getParams (int argc, char *argv[], PARAMS params)
 
 int main(int argc, char **argv)
 {
-	PARAMS params = {-1,-1,"","","",false,false};
+	PARAMS params = {-1,-1,stdin,stdout,NULL,false,false};
 	params = getParams(argc,argv,params);
 	
-	T_NODE_PTR huffmanTree;
-	if(treeInit(&huffmanTree))
-		cerr<<"Inicializace ok"<<endl;
-	else
-		exit(AHEDFail);
+	tAHED ahed;
+	ahed.codedSize = 0;
+	ahed.uncodedSize = 0;
 	
-	dispose(&huffmanTree);
-	cerr<<"Dispose OK"<<endl;
+	AHEDEncoding(&ahed,params.input,stdout);
+	
+//	cerr<<"Test: "<<bitset<4>(test)<<endl;
+//	
+//	int16_t test2 = (test << 1) + 1;
+//	cerr<<"Test: "<<bitset<5>(test2)<<endl;
+	
+	
+	fclose(params.input);
+//	delete[] bufu_charf;
 	
 	exit(AHEDOK);
 }

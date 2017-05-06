@@ -9,12 +9,20 @@
 #define __KKO_AHED_H__
 
 #include <stdio.h>
+#include <map>
 #include <sys/types.h>
+#include <inttypes.h>
+
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 #define AHEDOK 0
 #define AHEDFail -1
 
-#define ESC 0
+#define ESC 256
+#define NAS 257
+#define SYMBOLS 257
 
 /* Datovy typ zaznamu o (de)kodovani */
 typedef struct{
@@ -29,9 +37,11 @@ typedef struct T_NODE {
 	struct T_NODE *parent;
 	struct T_NODE *leftChild;
 	struct T_NODE *rightChild;
-	int64_t count;
-	int64_t symbol;
-	int64_t code;
+	int64_t count;	 // cetnost	
+	int16_t symbol;  // kod symbolu
+	int16_t code;	// kod v binarnim strome
+	int32_t level;	// uroven zanoreni
+	int64_t rank;	// poradi vlozeni
 } *T_NODE_PTR;
 
 
@@ -39,7 +49,12 @@ typedef struct T_NODE {
 bool treeInit(T_NODE_PTR* root);
 void dispose (T_NODE_PTR *root);
 
+std::string getBinaryCode(int16_t n);
 
+
+char *getBinaryCode (int16_t val, char *buff, int32_t sz);
+
+int16_t parseSymbol(char symbol);
 /* Nazev:
  *   AHEDEncoding
  * Cinnost:
