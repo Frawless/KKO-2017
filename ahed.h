@@ -23,6 +23,7 @@
 #define ESC 256
 #define NAS 257
 #define SYMBOLS 257
+#define CHAR_SIZE 8
 
 /* Datovy typ zaznamu o (de)kodovani */
 typedef struct{

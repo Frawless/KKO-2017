@@ -217,10 +217,7 @@ void updateTree(int64_t symbol, std::map<int,T_NODE_PTR> &lists)
 		{
 			T_NODE_PTR tmp = last->parent;
 			int64_t tmpRank = last->rank;
-			int32_t tmpLevel = last->level;
-					
-//			std::cerr<<"TestIN"<<std::endl;
-			
+
 			if(last->parent->rightChild == last){
 				last->parent->rightChild = change;
 			}
@@ -340,21 +337,24 @@ void updateCode(T_NODE_PTR *tree)
 //20:  end
 
 void printBuffer(FILE *file, T_BUFFER *buffer){
-	std::cerr<<"Zapisuju"<<std::endl;
+	printf("Zapisuju: %c\n",buffer->buffer);
 	fprintf(file,"%c",buffer->buffer);
-	std::cerr<<"výstup: "<<buffer->buffer<<std::endl;
 	buffer->buffer = 0;
 	buffer->position = 0;
 }
 
 void encodeSymbol(int16_t symbol, int32_t level, T_BUFFER *buffer, FILE *outputFile)
 {
+	printf("Symbol pro zapis: \"%c\"\n",symbol);
 	for(int x = 1; x <= level; x++){
-		buffer->buffer = symbol << 1;
+		buffer->buffer = (buffer->buffer << 1) + ((symbol >> (level-x)) & 1);
 		buffer->position++;
-		if(buffer->position == 8)
+		printf("test\n");
+		if(buffer->position == 8){
 			printBuffer(outputFile,buffer);
+		}
 	}
+	printf("Pozice: %d\n",buffer->position);
 }
 
 
@@ -380,10 +380,6 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
 	buffer.buffer = 0;
 	buffer.position = 0;
 	
-	u_char *output = 0;
-	
-//	T_NODE_PTR nodes[];
-	
 	std::map<int,T_NODE_PTR> nodes;
 	std::cerr<<"Test: "<<huffmanTree<<std::endl;
 	nodes.insert(std::pair<int,T_NODE_PTR>(ESC,huffmanTree));
@@ -402,6 +398,8 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
 			// NOT found
 			if(ahed->uncodedSize != 0){
 				encodeSymbol(nodes[ESC]->code,nodes[ESC]->level,&buffer,outputFile);
+				std::cerr<<"Code: "<<nodes[ESC]->code<<std::endl;
+				std::cerr<<"Level: "<<nodes[ESC]->level<<std::endl;
 //				for(int x = 1; x <= nodes[ESC]->level; x++){
 //					buffer.buffer = nodes[ESC]->code << 1;
 //					buffer.position++;
@@ -413,10 +411,9 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
 			// Vytvorim novy node
 			createNewNode(nodes,ch);
 			
-			std::cerr<<"Code: "<<nodes[ESC]->code<<std::endl;
-			std::cerr<<"Level: "<<nodes[ESC]->level<<std::endl;
+
 			
-			encodeSymbol(ch,8,&buffer,outputFile);
+			encodeSymbol(ch,CHAR_SIZE,&buffer,outputFile);
 //			for(int x = 1; x <= 8; x++){
 //				buffer.buffer = ch << 1;
 //				buffer.position++;
@@ -445,7 +442,12 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
 		updateTree(ch,nodes);
 		ahed->uncodedSize++;
 	}
-		
+	
+	std::cerr<<"Chci vložit poslední eof"<<std::endl;
+	
+	printf("Pred:Pozice: %d\n",buffer.position);
+	std::cerr<<"Code: "<<nodes[ESC]->code<<std::endl;
+	std::cerr<<"Level: "<<nodes[ESC]->level<<std::endl;
 	// EOF
 	encodeSymbol(nodes[ESC]->code,nodes[ESC]->level,&buffer,outputFile);
 //	for(int x = 1; x <= nodes[ESC]->level; x++){
@@ -455,12 +457,17 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
 //			printBuffer(outputFile,&buffer);
 //	}
 	
+	printf("Out:Pozice: %d\n",buffer.position);
+	
 	// Zarovnani bajtu
-	while(buffer.position != 8){
-		buffer.buffer = 0 << 1;
-		buffer.position++;
+	if(buffer.position != 0){
+		while(buffer.position != CHAR_SIZE){
+			buffer.buffer = (buffer.buffer << 1) + 0;
+			buffer.position++;
+		}
+		printBuffer(outputFile,&buffer);		
 	}
-	printBuffer(outputFile,&buffer);
+
 	
 	printf("\n\n\n");
 	printTree(huffmanTree);
@@ -491,6 +498,104 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
  */
 int AHEDDecoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
 {
+	T_NODE_PTR huffmanTree;
+	if(!treeInit(&huffmanTree))
+		exit(AHEDFail);
+	
+	T_BUFFER buffer;
+	buffer.buffer = 0;
+	buffer.position = 0;
+	
+	bool ESCfound = true;
+	int8_t currentBIT;
+	
+	std::map<int,T_NODE_PTR> nodes;
+	nodes.insert(std::pair<int,T_NODE_PTR>(ESC,huffmanTree));
+	
+	T_NODE_PTR tmpNode = huffmanTree;
+	
+	int16_t ch;
+	while((ch = fgetc(inputFile)) != EOF)
+	{
+		for(int x = 0; x < CHAR_SIZE; x++)
+		{
+			
+			int8_t res = 0;          //Result
+			int8_t temp = ch;     // ones complement?
+			for(int y = 7; y > 0 ; y--)
+			{
+				res = res | (temp & 0x01);
+				temp    = temp  >> 1;
+				res       = res     << 1;
+			}
+			res = res | (temp & 0x01);			
+			
+//			std::cerr<<ch<<std::endl;
+//			std::cerr<<"BIT: "<<((ch >> x) & 1)<<std::endl;
+			std::cerr<<"BIT flip: "<<((res >> x) & 1)<<std::endl;
+			
+			currentBIT = (res >> x) & 1;
+			
+			if(ESCfound)
+			{
+				buffer.buffer = (buffer.buffer << 1) + ((res >> x) & 1);;
+				buffer.position++;
+				
+				if(buffer.position == CHAR_SIZE)
+				{
+					std::cerr<<buffer.buffer<<std::endl;
+					// Vytvorim novy node
+					createNewNode(nodes,buffer.buffer);
+					// Aktualizuj strom
+					updateTree(buffer.buffer,nodes);
+					printBuffer(outputFile,&buffer);
+//					fprintf(outputFile,"%c",01100001);
+					
+					ESCfound = false;
+					ahed->codedSize++;
+				}
+				continue;
+			}
+//			else{
+			std::cerr<<"test1"<<std::endl;
+				if(currentBIT == 1)
+					tmpNode = tmpNode->rightChild;
+				else
+					tmpNode = tmpNode->leftChild;
+				
+			if(tmpNode == NULL){
+				std::cerr<<"Prázdný storm, nazdar"<<std::endl;
+				dispose(&huffmanTree);
+				return AHEDFail;
+			}
+			
+			std::cerr<<"test21"<<std::endl;
+				if(tmpNode->symbol == ESC)
+				{
+					std::cerr<<"ESC - bude nový symbol"<<std::endl;
+					ESCfound = true;
+					tmpNode = huffmanTree;
+				}
+				else if(tmpNode->symbol > -1 && tmpNode->symbol < ESC)
+				{
+					std::cerr<<"Zapisuju stávající ze stromu"<<std::endl;
+					updateTree(tmpNode->symbol,nodes);
+//					std::cerr<<tmpNode->symbol<<std::endl;
+					buffer.buffer = tmpNode->symbol;
+					std::cerr<<buffer.buffer<<std::endl;
+					printBuffer(outputFile,&buffer);
+					
+					tmpNode = huffmanTree;
+				}
+				
+//			}			
+		}
+		ahed->codedSize++;
+		
+	}
+		
+	dispose(&huffmanTree);
+	std::cerr<<"Dispose OK"<<std::endl;	
 	return AHEDOK;
 }
 

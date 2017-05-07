@@ -124,7 +124,10 @@ int main(int argc, char **argv)
 	ahed.codedSize = 0;
 	ahed.uncodedSize = 0;
 	
-	AHEDEncoding(&ahed,params.input,params.output);
+	if(params.encode)
+		AHEDEncoding(&ahed,params.input,params.output);
+	else
+		AHEDDecoding(&ahed,params.input,params.output);
 	
 	
 	fclose(params.input);
