@@ -69,7 +69,6 @@ PARAMS getParams (int argc, char *argv[], PARAMS params)
 				if((params.input = fopen(optarg,"r")) == NULL){
 					exit(AHEDFail);
 				}
-				cerr<<"Otevřen soubor"<<endl;
 				break;
 			case 'o':
 				if((params.output = fopen(optarg,"w+")) == NULL){
@@ -92,9 +91,8 @@ PARAMS getParams (int argc, char *argv[], PARAMS params)
 				params.ErrParam++;
 				break;
 			case 'h':
-				//TODO - print help;
 				printHelp();
-				exit(EXIT_SUCCESS);
+				exit(AHEDOK);
 				break;				
 			default:
 				params.ErrParam = -1;
@@ -109,8 +107,6 @@ PARAMS getParams (int argc, char *argv[], PARAMS params)
 		cerr<<"getParams() - Špatný formát argumentů!"<<endl;
 		printHelp();
 	}
-		
-
 	// vrací se struktura se zpracovanými parametry
 	return params;
 }
@@ -129,9 +125,16 @@ int main(int argc, char **argv)
 	else
 		AHEDDecoding(&ahed,params.input,params.output);
 	
+	if(params.log != NULL){
+		fprintf(params.log,"login = xstejs24\n");
+		fprintf(params.log,"uncodedSize = %ld\n",ahed.uncodedSize);
+		fprintf(params.log,"codedSize = %ld\n",ahed.codedSize);
+		fclose(params.log);
+	}
 	
+	// cisteni
 	fclose(params.input);
-//	delete[] bufu_charf;
+	fclose(params.output);
 	
 	exit(AHEDOK);
 }
