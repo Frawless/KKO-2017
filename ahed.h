@@ -50,7 +50,7 @@ bool treeInit(T_NODE_PTR* root);
 void dispose (T_NODE_PTR *root);
 
 std::string getBinaryCode(int16_t n);
-
+void updateCode(T_NODE_PTR *root);
 
 char *getBinaryCode (int16_t val, char *buff, int32_t sz);
 

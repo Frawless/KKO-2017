@@ -84,13 +84,16 @@ void createNewNode(std::map<int,T_NODE_PTR> &lists, int16_t symbol)
 	
 	std::cerr<<"Set Root: "<<root<<std::endl;
 	std::cerr<<"Set Root symbol: "<<root->symbol<<std::endl;
+	std::cerr<<"Root code: "<<std::bitset<8>(root->code)<<std::endl;
 	
 	newNodeLeft->parent = newNodeRight->parent = root;
 	newNodeLeft->leftChild = newNodeRight->leftChild = newNodeLeft->rightChild = newNodeRight->rightChild = NULL;
 	
-	newNodeLeft->symbol = 256;
+	newNodeLeft->symbol = ESC;
 	newNodeLeft->count = 0;
-	newNodeLeft->code = (root->code << 1) + 0;
+	std::cerr<<"CodeP: "<<std::bitset<8>(root->code)<<std::endl;
+	newNodeLeft->code = (root->code << 1) + 1;
+	std::cerr<<"CodeR: "<<std::bitset<8>(newNodeLeft->code)<<std::endl;
 	newNodeLeft->rank = root->rank + 2;
 	
 	std::cerr<<"New Leftt: "<<newNodeLeft<<std::endl;
@@ -98,7 +101,8 @@ void createNewNode(std::map<int,T_NODE_PTR> &lists, int16_t symbol)
 	
 	newNodeRight->symbol = symbol;
 	newNodeRight->count = 0;	
-	newNodeRight->code = (root->code << 1) + 1;	
+	std::cerr<<"CodeP: "<<std::bitset<8>(root->code)<<std::endl;
+	newNodeRight->code = (root->code << 1) + 0;	
 	newNodeRight->rank = root->rank + 1;
 	std::cerr<<"CodeR: "<<std::bitset<8>(newNodeRight->code)<<std::endl;
 	
@@ -119,7 +123,7 @@ void createNewNode(std::map<int,T_NODE_PTR> &lists, int16_t symbol)
 
 	lists.insert(std::pair<int,T_NODE_PTR>(symbol,newNodeRight));
 //	lists.insert(std::pair<int,T_NODE_PTR>(ESC,newNodeLeft));
-		lists[ESC] = newNodeLeft;
+	lists[ESC] = newNodeLeft;
 	lists.insert(std::pair<int,T_NODE_PTR>(NAS+root->rank,root));
 	
 	std::cerr<<"Mapsize: "<<lists.size()<<std::endl;
@@ -139,13 +143,13 @@ void printTree(T_NODE_PTR tree){
 	if(tree == NULL)
 		return;
 	
-	std::cerr<<"\t\t\ts: "<<tree->symbol<<" count: "<<tree->count<<" rank: "<<tree->rank<<" l: "<<tree->level<<std::endl;
+	std::cerr<<"\t\t\ts: "<<tree->symbol<<" count: "<<tree->count<<" rank: "<<tree->rank<<" l: "<<tree->level<<" c: "<<std::bitset<8>(tree->code)<<std::endl;
 	
 //	if(tree->parent == NULL)
 //		std::cerr<<tree<<" Vrchol: "<<tree->code<<" Count: "<<tree->count<<std::endl;
 	
 	if(tree->leftChild != NULL){
-		std::cerr<<"s: "<<tree->leftChild->symbol<<" count: "<<tree->leftChild->count<<" rank: "<<tree->leftChild->rank<<" l: "<<tree->leftChild->level<<std::endl;
+		std::cerr<<"s: "<<tree->leftChild->symbol<<" count: "<<tree->leftChild->count<<" rank: "<<tree->leftChild->rank<<" l: "<<tree->leftChild->level<<" c: "<<std::bitset<8>(tree->rightChild->code)<<std::endl;
 //			std::cerr<<tree<<" Vrchol: "<<tree->symbol<<" Count: "<<tree->count<<" LeftS: "<<tree->leftChild->symbol<<" RightS: "<<tree->rightChild->symbol<<std::endl;
 		
 //			std::cerr<<tree<<" Vrchol: "<<tree->symbol<<" Count: "<<tree->count<<" LeftS: "<<tree->leftChild->symbol<<" RightS: "<<tree->rightChild->symbol<<" parent: "<<tree->parent<<" : "<<tree->parent->symbol<<std::endl;
@@ -153,7 +157,7 @@ void printTree(T_NODE_PTR tree){
 	}
 	if(tree->rightChild != NULL)
 	{
-		std::cerr<<"\t\t\t\t\t\ts: "<<tree->rightChild->symbol<<" count: "<<tree->rightChild->count<<" rank: "<<tree->rightChild->rank<<" l: "<<tree->rightChild->level<<std::endl;
+		std::cerr<<"\t\t\t\t\t\ts: "<<tree->rightChild->symbol<<" count: "<<tree->rightChild->count<<" rank: "<<tree->rightChild->rank<<" l: "<<tree->rightChild->level<<" c: "<<std::bitset<8>(tree->rightChild->code)<<std::endl;
 	}
 	
 //	std::cerr<<tree<<" Vrchol: "<<tree->code<<" Count: "<<tree->count<<std::endl;
@@ -219,22 +223,22 @@ void updateTree(int64_t symbol, std::map<int,T_NODE_PTR> &lists)
 			
 			if(last->parent->rightChild == last){
 				last->parent->rightChild = change;
-//				change->code = (last->parent->code << 1) + 0;
+				change->code = (last->parent->code << 1) + 1;
 			}
 			else{
 				last->parent->leftChild = change;
-//				change->code = (last->parent->code << 1) + 1;				
+				change->code = (last->parent->code << 1) + 0;				
 			}
 			
 			std::cerr<<"TestSWAP1"<<std::endl;
 			
 			if(change->parent->rightChild == change){
 				change->parent->rightChild = last;
-//				last->code = (change->parent->code << 1) + 0;
+				last->code = (change->parent->code << 1) + 1;
 			}
 			else{
 				change->parent->leftChild = last;
-//				last->code = (change->parent->code << 1) + 1;				
+				last->code = (change->parent->code << 1) + 0;				
 			}
 			
 
@@ -245,20 +249,48 @@ void updateTree(int64_t symbol, std::map<int,T_NODE_PTR> &lists)
 			
 			change->parent = tmp;
 			change->rank = tmpRank;
-
+		
 			last->level = last->parent->level + 1;
+			std::cerr<<"Last: "<<last->level<<std::endl;
 			change->level = change->parent->level + 1;
+			std::cerr<<"change: "<<change->level<<std::endl;
 		}
 		
 		std::cerr<<"Test3"<<std::endl;
 		
 		last->count++;
+		if(last->parent == NULL)
+			updateCode(&last);
 		last = last->parent;
 		x++;
 		if(last == NULL)
 			std::cerr<<"Nasrat"<<std::endl;
 	}
+	
 }
+
+
+void updateCode(T_NODE_PTR *tree)
+{
+	T_NODE_PTR root = (*tree);
+	if(root->parent == NULL){
+		root->code = 0;
+		root->level = 0;
+	}
+	if(root->leftChild != NULL){
+		root->leftChild->code = (root->leftChild->parent->code << 1) + 0;
+		root->leftChild->level = root->leftChild->parent->level + 1;
+		updateCode(&root->leftChild);
+	}
+	if(root->rightChild != NULL){
+		root->rightChild->code = (root->rightChild->parent->code << 1) + 1;
+		root->rightChild->level = root->rightChild->parent->level + 1;	
+		updateCode(&root->rightChild);
+	}
+	
+}
+
+	
 
 // http://stackoverflow.com/questions/699968/display-the-binary-representation-of-a-number-in-c
 // Převzato
@@ -385,6 +417,8 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
 		
 //		std::cerr<<"UncodedSize: "<<ahed->uncodedSize<<std::endl;
 	}
+//	updateCode(&huffmanTree);
+	printf("\n\n\n");
 	printTree(huffmanTree);
 	
 	dispose(&huffmanTree);

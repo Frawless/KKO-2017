@@ -120,11 +120,6 @@ int main(int argc, char **argv)
 	
 	AHEDEncoding(&ahed,params.input,stdout);
 	
-//	cerr<<"Test: "<<bitset<4>(test)<<endl;
-//	
-//	int16_t test2 = (test << 1) + 1;
-//	cerr<<"Test: "<<bitset<5>(test2)<<endl;
-	
 	
 	fclose(params.input);
 //	delete[] bufu_charf;
