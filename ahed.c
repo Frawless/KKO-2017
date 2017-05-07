@@ -90,7 +90,7 @@ void createNewNode(std::map<int,T_NODE_PTR> &lists, int16_t symbol)
 	
 	newNodeLeft->symbol = 256;
 	newNodeLeft->count = 0;
-//	newNodeLeft->code = (root->code << 1) + 0;
+	newNodeLeft->code = (root->code << 1) + 0;
 	newNodeLeft->rank = root->rank + 2;
 	
 	std::cerr<<"New Leftt: "<<newNodeLeft<<std::endl;
@@ -98,33 +98,35 @@ void createNewNode(std::map<int,T_NODE_PTR> &lists, int16_t symbol)
 	
 	newNodeRight->symbol = symbol;
 	newNodeRight->count = 0;	
-//	newNodeRight->code = (root->code << 1) + 1;	
+	newNodeRight->code = (root->code << 1) + 1;	
 	newNodeRight->rank = root->rank + 1;
+	std::cerr<<"CodeR: "<<std::bitset<8>(newNodeRight->code)<<std::endl;
 	
 	newNodeLeft->level = newNodeRight->level = newNodeLeft->parent->level + 1;
 	
-	std::cerr<<"NewRoot: "<<newNodeLeft<<std::endl;
-	std::cerr<<"Symbol na: "<<symbol<<std::endl;
-	std::cerr<<"ESC na: "<<ESC<<std::endl;
-	std::cerr<<"ROOT na: "<<NAS+1<<std::endl;
-	std::cerr<<"ESC: "<<newNodeLeft<<std::endl;
-	std::cerr<<"ESC parent: "<<newNodeLeft->parent<<std::endl;
-	std::cerr<<"Roott: "<<root<<std::endl;
-	
+//	std::cerr<<"NewRoot: "<<newNodeLeft<<std::endl;
+//	std::cerr<<"Symbol na: "<<symbol<<std::endl;
+//	std::cerr<<"ESC na: "<<ESC<<std::endl;
+//	std::cerr<<"ROOT na: "<<NAS+1<<std::endl;
+//	std::cerr<<"ESC: "<<newNodeLeft<<std::endl;
+//	std::cerr<<"ESC parent: "<<newNodeLeft->parent<<std::endl;
+//	std::cerr<<"Roott: "<<root<<std::endl;
+//	
 	std::cerr<<"chci vložit: "<<symbol<<" kód: "<<newNodeRight<<std::endl;
 	std::cerr<<"chci vložit: "<<ESC<<" kód: "<<newNodeLeft<<std::endl;
-	std::cerr<<"chci vložit: "<<NAS+1<<" kód: "<<root<<std::endl;
+	std::cerr<<"chci vložit: "<<NAS+root->rank<<" kód: "<<root<<std::endl;
 	
 
 	lists.insert(std::pair<int,T_NODE_PTR>(symbol,newNodeRight));
-	lists.insert(std::pair<int,T_NODE_PTR>(ESC,newNodeLeft));
-	lists.insert(std::pair<int,T_NODE_PTR>(NAS+1,root));
+//	lists.insert(std::pair<int,T_NODE_PTR>(ESC,newNodeLeft));
+		lists[ESC] = newNodeLeft;
+	lists.insert(std::pair<int,T_NODE_PTR>(NAS+root->rank,root));
 	
 	std::cerr<<"Mapsize: "<<lists.size()<<std::endl;
 	
-//	std::cerr<<"Vloženo/Upraveno: "<<symbol<<" kód: "<<lists[symbol]->code<<" Count: "<<lists[symbol]<<std::endl;
+	std::cerr<<"Vloženo/Upraveno: "<<symbol<<" kód: "<<lists[symbol]->code<<" Count: "<<lists[symbol]<<std::endl;
 	std::cerr<<"Vloženo/Upraveno: "<<ESC<<" kód: "<<lists[ESC]->code<<" Count: "<<lists[ESC]<<std::endl;
-	std::cerr<<"Vloženo/Upraveno: "<<NAS+1<<" kód: "<<lists[NAS+1]->code<<" Count: "<<lists[NAS+1]<<std::endl;
+	std::cerr<<"Vloženo/Upraveno: "<<NAS+1<<" kód: "<<lists[NAS+root->rank]->code<<" Count: "<<lists[NAS+root->rank]<<std::endl;
 	
 //	lists[symbol] = newNodeLeft;
 //	lists[ESC] = newNodeRight;
@@ -137,9 +139,29 @@ void printTree(T_NODE_PTR tree){
 	if(tree == NULL)
 		return;
 	
-	std::cerr<<"Vrchol: "<<tree->code<<" Count: "<<tree->count<<std::endl;
-	if(tree->leftChild != NULL)
+	std::cerr<<"\t\t\ts: "<<tree->symbol<<" count: "<<tree->count<<" rank: "<<tree->rank<<" l: "<<tree->level<<std::endl;
+	
+//	if(tree->parent == NULL)
+//		std::cerr<<tree<<" Vrchol: "<<tree->code<<" Count: "<<tree->count<<std::endl;
+	
+	if(tree->leftChild != NULL){
+		std::cerr<<"s: "<<tree->leftChild->symbol<<" count: "<<tree->leftChild->count<<" rank: "<<tree->leftChild->rank<<" l: "<<tree->leftChild->level<<std::endl;
+//			std::cerr<<tree<<" Vrchol: "<<tree->symbol<<" Count: "<<tree->count<<" LeftS: "<<tree->leftChild->symbol<<" RightS: "<<tree->rightChild->symbol<<std::endl;
+		
+//			std::cerr<<tree<<" Vrchol: "<<tree->symbol<<" Count: "<<tree->count<<" LeftS: "<<tree->leftChild->symbol<<" RightS: "<<tree->rightChild->symbol<<" parent: "<<tree->parent<<" : "<<tree->parent->symbol<<std::endl;
+			
+	}
+	if(tree->rightChild != NULL)
+	{
+		std::cerr<<"\t\t\t\t\t\ts: "<<tree->rightChild->symbol<<" count: "<<tree->rightChild->count<<" rank: "<<tree->rightChild->rank<<" l: "<<tree->rightChild->level<<std::endl;
+	}
+	
+//	std::cerr<<tree<<" Vrchol: "<<tree->code<<" Count: "<<tree->count<<std::endl;
+//	std::cerr<<tree<<" Vrchol: "<<tree->code<<" Count: "<<tree->count<<" LeftS: "<<tree->leftChild->symbol<<" RightS: "<<tree->rightChild->symbol<<std::endl;
+
+	if(tree->leftChild != NULL){
 		printTree(tree->leftChild);
+	}
 	if(tree->rightChild != NULL)
 		printTree(tree->rightChild);
 }
@@ -160,20 +182,22 @@ void printTree(T_NODE_PTR tree){
 void updateTree(int64_t symbol, std::map<int,T_NODE_PTR> &lists)
 {
 	T_NODE_PTR last = lists[symbol];
-	T_NODE_PTR change;
 	
-	std::cerr<<"Test: "<<last->count<<std::endl;
-	
+	std::cerr<<"Test: "<<last<<std::endl;
+	int x = 0;
 	while(last != NULL)
 	{
-		change = last;
-		if(last->parent == NULL)
-			break;
+//		if(x == 10)
+//			return;
+		T_NODE_PTR change = last;
+		std::cerr<<last->parent<<std::endl;
+//		if(last->parent == NULL)
+//			break;
 		std::map<int,T_NODE_PTR>::iterator it;
 		// Iteruju pres vsechny vlozene uzly
 		for(it = lists.begin(); it != lists.end(); it++)
 		{
-			if(last->count == it->second->count && last->rank < it->second->rank)
+			if(last->count == it->second->count && change->rank > it->second->rank)
 			{
 				std::cerr<<"CNT: "<<last->count<<std::endl;
 				std::cerr<<"CNT it: "<<it->second->count<<std::endl;
@@ -182,44 +206,45 @@ void updateTree(int64_t symbol, std::map<int,T_NODE_PTR> &lists)
 				change = it->second;
 			}
 		}
-		std::cerr<<" : "<<last<<" : "<<change<<std::endl;
-		std::cerr<<" : "<<last->symbol<<" : "<<change->symbol<<std::endl;
 		
-		
+		std::cerr<<"Test: "<<last<<std::endl;
+		std::cerr<<"Test2: "<<change<<std::endl;
 		if(last->parent != change && last != change)
 		{
-			T_NODE_PTR tmp = last;
+			T_NODE_PTR tmp = last->parent;
+			int64_t tmpRank = last->rank;
+			int32_t tmpLevel = last->level;
 					
 			std::cerr<<"TestIN"<<std::endl;
 			
 			if(last->parent->rightChild == last){
 				last->parent->rightChild = change;
-				change->code = (last->parent->code << 1) + 0;
+//				change->code = (last->parent->code << 1) + 0;
 			}
 			else{
 				last->parent->leftChild = change;
-				change->code = (last->parent->code << 1) + 1;				
+//				change->code = (last->parent->code << 1) + 1;				
 			}
 			
 			std::cerr<<"TestSWAP1"<<std::endl;
 			
 			if(change->parent->rightChild == change){
 				change->parent->rightChild = last;
-				last->code = (change->parent->code << 1) + 0;
+//				last->code = (change->parent->code << 1) + 0;
 			}
 			else{
 				change->parent->leftChild = last;
-				last->code = (change->parent->code << 1) + 1;				
+//				last->code = (change->parent->code << 1) + 1;				
 			}
 			
 
 			std::cerr<<"TestSWAP2"<<std::endl;
 
 			last->parent = change->parent;
-			change->parent = tmp->parent;
-			
 			last->rank = change->rank;
-			change->rank = tmp->rank;
+			
+			change->parent = tmp;
+			change->rank = tmpRank;
 
 			last->level = last->parent->level + 1;
 			change->level = change->parent->level + 1;
@@ -229,6 +254,7 @@ void updateTree(int64_t symbol, std::map<int,T_NODE_PTR> &lists)
 		
 		last->count++;
 		last = last->parent;
+		x++;
 		if(last == NULL)
 			std::cerr<<"Nasrat"<<std::endl;
 	}
@@ -306,6 +332,8 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
 	
 //	u_char *output;
 	
+//	T_NODE_PTR nodes[];
+	
 	std::map<int,T_NODE_PTR> nodes;
 	std::cerr<<"Test: "<<huffmanTree<<std::endl;
 	nodes.insert(std::pair<int,T_NODE_PTR>(ESC,huffmanTree));
@@ -332,7 +360,7 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
 			// Vytvorim novy node
 			createNewNode(nodes,ch);
 			
-			printTree(huffmanTree);
+//			printTree(huffmanTree);
 			
 			// Aktualizuju strom
 //			updateTree(ch,nodes);
@@ -340,21 +368,24 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
 		} else {
 		// found
 		}
+		// Aktualizuju strom
+		updateTree(ch,nodes);
 		ahed->uncodedSize++;
 		
-		
-		std::map<int,T_NODE_PTR>::iterator it;
-		// Iteruju pres vsechny vlozene uzly
-		for(it = nodes.begin(); it != nodes.end(); it++)
-		{
-			if(it->second->parent != NULL)
-				std::cerr<<"Key: "<<it->first<<" code: "<<it->second->code<<" parent symbol: "<<it->second->parent->symbol<<" borther: "<<it->second->parent->rightChild->code<<" : "<<it->second->parent->leftChild->code<<std::endl;
-			else
-				std::cerr<<"Key: "<<it->first<<" code: "<<it->second->code<<std::endl;
-		}			
+//		
+//		std::map<int,T_NODE_PTR>::iterator it;
+//		// Iteruju pres vsechny vlozene uzly
+//		for(it = nodes.begin(); it != nodes.end(); it++)
+//		{
+//			if(it->second->parent != NULL)
+//				std::cerr<<"Key: "<<it->first<<" code: "<<it->second->code<<" parent symbol: "<<it->second->parent->symbol<<" borther: "<<it->second->parent->rightChild->code<<" : "<<it->second->parent->leftChild->code<<std::endl;
+//			else
+//				std::cerr<<"Key: "<<it->first<<" code: "<<it->second->code<<std::endl;
+//		}			
 		
 //		std::cerr<<"UncodedSize: "<<ahed->uncodedSize<<std::endl;
 	}
+	printTree(huffmanTree);
 	
 	dispose(&huffmanTree);
 	
