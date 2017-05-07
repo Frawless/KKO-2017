@@ -2,7 +2,7 @@
  * Autor: Jakub Stejskal (xstejs24)
  * Datum: 3.5. 2017
  * Soubor: ahead.h
- * Komentar:
+ * Komentar: Soubor obsaující definované typy, konstanty a deklarace funkcí.
  */ 
 
 #ifndef __KKO_AHED_H__

@@ -2,15 +2,13 @@
  * Autor: Jakub Stejskal (xstejs24)
  * Datum: 3.5. 2017
  * Soubor: ahead.c
- * Komentar: 
+ * Komentar: Knihovna obsahující potřebné funkce pro kódování a dekódování pomocí Adaptivní Huffmanovy metody.
  */ 
 
 #include <cstdlib>
 #include "ahed.h"
 
 #include <bitset>
-
-
 
 /**
  * Funkce pro inicializaci stromu.

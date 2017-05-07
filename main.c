@@ -2,7 +2,7 @@
  * Autor: Jakub Stejskal (xstejs24)
  * Datum: 3.5. 2017
  * Soubor: main.c
- * Komentar:
+ * Komentar: Soubor obsahujici main a zpracovani argumentu progrmau.
  */ 
 #include <stdlib.h>
 #include <stdio.h>
@@ -106,7 +106,15 @@ PARAMS getParams (int argc, char *argv[], PARAMS params)
 	if(params.ErrParam != 0){
 		cerr<<"getParams() - Špatný formát argumentů!"<<endl;
 		printHelp();
+		exit(AHEDFail);
 	}
+	
+	if(params.encode && params.decode){
+		cerr<<"getParams() - Špatný formát argumentů!"<<endl;
+		printHelp();
+		exit(AHEDFail);
+	}
+	
 	// vrací se struktura se zpracovanými parametry
 	return params;
 }
