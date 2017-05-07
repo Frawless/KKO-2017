@@ -23,7 +23,7 @@ bool treeInit(T_NODE_PTR* root)
 	// Osetreni nemoznosti alokace pameti
 	if(*root == NULL)
 		return false;
-	
+	// Inicializacni hodnoty korene
 	(*root)->leftChild = NULL;
 	(*root)->rightChild = NULL;
 	(*root)->parent = NULL;
@@ -69,14 +69,15 @@ void printTree(T_NODE_PTR tree)
 {
 	if(tree == NULL)
 		return;
-	
+	// Vypis rootu
 	std::cerr<<"\t\t\ts: "<<tree->symbol<<" count: "<<tree->count<<" rank: "<<tree->rank<<" l: "<<tree->level<<" c: "<<std::bitset<8>(tree->code)<<std::endl;
-	
+	// Levy potomek
 	if(tree->leftChild != NULL)
 		std::cerr<<"s: "<<tree->leftChild->symbol<<" count: "<<tree->leftChild->count<<" rank: "<<tree->leftChild->rank<<" l: "<<tree->leftChild->level<<" c: "<<std::bitset<8>(tree->rightChild->code)<<std::endl;
+	// pravy potomek
 	if(tree->rightChild != NULL)
 		std::cerr<<"\t\t\t\t\t\ts: "<<tree->rightChild->symbol<<" count: "<<tree->rightChild->count<<" rank: "<<tree->rightChild->rank<<" l: "<<tree->rightChild->level<<" c: "<<std::bitset<8>(tree->rightChild->code)<<std::endl;
-
+	
 	if(tree->leftChild != NULL)
 		printTree(tree->leftChild);
 	
@@ -130,9 +131,6 @@ void createNewNode(std::map<int,T_NODE_PTR> &lists, int16_t symbol)
 	lists.insert(std::pair<int,T_NODE_PTR>(NAS+root->rank,root));	
 }
 
-
-
-
 /**
  * Funkce pro aktualizaci Huffmanova stromu. Hlavni myslena prevzata z: http://www.stringology.org/DataCompression/fgk/index_cs.html
  * Funkce v pripade potreby aktualizuje HUffmanuv kod tak, aby odpovidal vlastnostem algoritmu.
@@ -162,7 +160,7 @@ void updateTree(int64_t symbol, std::map<int,T_NODE_PTR> &lists)
 				change = it->second;
 			}
 		}
-		// Update stromu, prohozeni ukazatelu a zvysei urovne
+		// Update stromu, prohozeni ukazatelu a zvyseni urovne
 		if(last->parent != change && last != change)
 		{
 			// Ulozeni ukazatele na rodice posledne zpracovavaneho
@@ -246,7 +244,7 @@ void printBuffer(FILE *file, T_BUFFER *buffer)
  * @param buffer - buffer obsahujici vystupni posloupnost bitu
  * @param outputFile - vystupni soubor
  */
-void encodeSymbol(tAHED *ahed,int32_t symbol, int32_t level, T_BUFFER *buffer, FILE *outputFile)
+void encodeSymbol(tAHED *ahed,int64_t symbol, int64_t level, T_BUFFER *buffer, FILE *outputFile)
 {
 	// Prochazime kod symbolu a ulozime jen pouzivanou cast
 	// Napr: funkce dostane 0000....0000 0110  a uroven zanoreni je 3, prebytecne znaky se oriznou a buffer dostane pouze 110
@@ -370,8 +368,8 @@ int AHEDDecoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
 			for(int y = 7; y > 0 ; y--)
 			{
 				res = res | (temp & 0x01);
-				temp    = temp  >> 1;
-				res       = res     << 1;
+				temp = temp >> 1;
+				res = res << 1;
 			}
 			res = res | (temp & 0x01);			
 			// ##################################

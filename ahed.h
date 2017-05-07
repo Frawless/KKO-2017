@@ -40,12 +40,12 @@ typedef struct T_NODE {
 	struct T_NODE *rightChild;
 	int64_t count;	 // cetnost	
 	int16_t symbol;  // kod symbolu
-	int32_t code;	// kod v binarnim strome
-	int32_t level;	// uroven zanoreni
+	int64_t code;	// kod v binarnim strome
+	int64_t level;	// uroven zanoreni
 	int64_t rank;	// poradi vlozeni
 } *T_NODE_PTR;
 
-
+// Struktura po buffer udržující 8 bitů pro výpis
 typedef struct{
 	int8_t buffer;
 	int8_t position;
@@ -104,7 +104,7 @@ void printBuffer(FILE *file, T_BUFFER *buffer);
  * @param buffer - buffer obsahujici vystupni posloupnost bitu
  * @param outputFile - vystupni soubor
  */
-void encodeSymbol(tAHED *ahed,int32_t symbol, int32_t level, T_BUFFER *buffer, FILE *outputFile);
+void encodeSymbol(tAHED *ahed,int64_t symbol, int64_t level, T_BUFFER *buffer, FILE *outputFile);
 
 /* Nazev:
  *   AHEDEncoding
