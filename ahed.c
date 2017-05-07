@@ -67,8 +67,8 @@ void createNewNode(std::map<int,T_NODE_PTR> &lists, int16_t symbol)
 	T_NODE_PTR newNodeRight = (T_NODE_PTR)malloc(sizeof(T_NODE));
 	
 	T_NODE_PTR root = lists[ESC];
-	std::cerr<<"Picking Root: "<<root<<std::endl;
-	std::cerr<<"Picking Root symbol: "<<root->symbol<<std::endl;
+//	std::cerr<<"Picking Root: "<<root<<std::endl;
+//	std::cerr<<"Picking Root symbol: "<<root->symbol<<std::endl;
 	
 	if(newNodeLeft == NULL || newNodeRight == NULL)
 	{
@@ -80,31 +80,31 @@ void createNewNode(std::map<int,T_NODE_PTR> &lists, int16_t symbol)
 	
 	root->leftChild = newNodeLeft;
 	root->rightChild = newNodeRight;
-	root->symbol = 257;
+	root->symbol = NAS;
 	
-	std::cerr<<"Set Root: "<<root<<std::endl;
-	std::cerr<<"Set Root symbol: "<<root->symbol<<std::endl;
-	std::cerr<<"Root code: "<<std::bitset<8>(root->code)<<std::endl;
+//	std::cerr<<"Set Root: "<<root<<std::endl;
+//	std::cerr<<"Set Root symbol: "<<root->symbol<<std::endl;
+//	std::cerr<<"Root code: "<<std::bitset<8>(root->code)<<std::endl;
 	
 	newNodeLeft->parent = newNodeRight->parent = root;
 	newNodeLeft->leftChild = newNodeRight->leftChild = newNodeLeft->rightChild = newNodeRight->rightChild = NULL;
 	
 	newNodeLeft->symbol = ESC;
 	newNodeLeft->count = 0;
-	std::cerr<<"CodeP: "<<std::bitset<8>(root->code)<<std::endl;
-	newNodeLeft->code = (root->code << 1) + 1;
-	std::cerr<<"CodeR: "<<std::bitset<8>(newNodeLeft->code)<<std::endl;
+//	std::cerr<<"CodeP: "<<std::bitset<8>(root->code)<<std::endl;
+	newNodeLeft->code = (root->code << 1) + 0;
+//	std::cerr<<"CodeR: "<<std::bitset<8>(newNodeLeft->code)<<std::endl;
 	newNodeLeft->rank = root->rank + 2;
 	
-	std::cerr<<"New Leftt: "<<newNodeLeft<<std::endl;
-	std::cerr<<"New Leftt symbol: "<<newNodeLeft->symbol<<std::endl;	
+//	std::cerr<<"New Leftt: "<<newNodeLeft<<std::endl;
+//	std::cerr<<"New Leftt symbol: "<<newNodeLeft->symbol<<std::endl;	
 	
 	newNodeRight->symbol = symbol;
 	newNodeRight->count = 0;	
-	std::cerr<<"CodeP: "<<std::bitset<8>(root->code)<<std::endl;
-	newNodeRight->code = (root->code << 1) + 0;	
+//	std::cerr<<"CodeP: "<<std::bitset<8>(root->code)<<std::endl;
+	newNodeRight->code = (root->code << 1) + 1;	
 	newNodeRight->rank = root->rank + 1;
-	std::cerr<<"CodeR: "<<std::bitset<8>(newNodeRight->code)<<std::endl;
+//	std::cerr<<"CodeR: "<<std::bitset<8>(newNodeRight->code)<<std::endl;
 	
 	newNodeLeft->level = newNodeRight->level = newNodeLeft->parent->level + 1;
 	
@@ -116,21 +116,21 @@ void createNewNode(std::map<int,T_NODE_PTR> &lists, int16_t symbol)
 //	std::cerr<<"ESC parent: "<<newNodeLeft->parent<<std::endl;
 //	std::cerr<<"Roott: "<<root<<std::endl;
 //	
-	std::cerr<<"chci vložit: "<<symbol<<" kód: "<<newNodeRight<<std::endl;
-	std::cerr<<"chci vložit: "<<ESC<<" kód: "<<newNodeLeft<<std::endl;
-	std::cerr<<"chci vložit: "<<NAS+root->rank<<" kód: "<<root<<std::endl;
-	
+//	std::cerr<<"chci vložit: "<<symbol<<" kód: "<<newNodeRight<<std::endl;
+//	std::cerr<<"chci vložit: "<<ESC<<" kód: "<<newNodeLeft<<std::endl;
+//	std::cerr<<"chci vložit: "<<NAS+root->rank<<" kód: "<<root<<std::endl;
+//	
 
 	lists.insert(std::pair<int,T_NODE_PTR>(symbol,newNodeRight));
 //	lists.insert(std::pair<int,T_NODE_PTR>(ESC,newNodeLeft));
 	lists[ESC] = newNodeLeft;
 	lists.insert(std::pair<int,T_NODE_PTR>(NAS+root->rank,root));
 	
-	std::cerr<<"Mapsize: "<<lists.size()<<std::endl;
-	
-	std::cerr<<"Vloženo/Upraveno: "<<symbol<<" kód: "<<lists[symbol]->code<<" Count: "<<lists[symbol]<<std::endl;
-	std::cerr<<"Vloženo/Upraveno: "<<ESC<<" kód: "<<lists[ESC]->code<<" Count: "<<lists[ESC]<<std::endl;
-	std::cerr<<"Vloženo/Upraveno: "<<NAS+1<<" kód: "<<lists[NAS+root->rank]->code<<" Count: "<<lists[NAS+root->rank]<<std::endl;
+//	std::cerr<<"Mapsize: "<<lists.size()<<std::endl;
+//	
+//	std::cerr<<"Vloženo/Upraveno: "<<symbol<<" kód: "<<lists[symbol]->code<<" Count: "<<lists[symbol]<<std::endl;
+//	std::cerr<<"Vloženo/Upraveno: "<<ESC<<" kód: "<<lists[ESC]->code<<" Count: "<<lists[ESC]<<std::endl;
+//	std::cerr<<"Vloženo/Upraveno: "<<NAS+1<<" kód: "<<lists[NAS+root->rank]->code<<" Count: "<<lists[NAS+root->rank]<<std::endl;
 	
 //	lists[symbol] = newNodeLeft;
 //	lists[ESC] = newNodeRight;
@@ -187,14 +187,14 @@ void updateTree(int64_t symbol, std::map<int,T_NODE_PTR> &lists)
 {
 	T_NODE_PTR last = lists[symbol];
 	
-	std::cerr<<"Test: "<<last<<std::endl;
+//	std::cerr<<"Test: "<<last<<std::endl;
 	int x = 0;
 	while(last != NULL)
 	{
 //		if(x == 10)
 //			return;
 		T_NODE_PTR change = last;
-		std::cerr<<last->parent<<std::endl;
+//		std::cerr<<last->parent<<std::endl;
 //		if(last->parent == NULL)
 //			break;
 		std::map<int,T_NODE_PTR>::iterator it;
@@ -203,46 +203,42 @@ void updateTree(int64_t symbol, std::map<int,T_NODE_PTR> &lists)
 		{
 			if(last->count == it->second->count && change->rank > it->second->rank)
 			{
-				std::cerr<<"CNT: "<<last->count<<std::endl;
-				std::cerr<<"CNT it: "<<it->second->count<<std::endl;
-				std::cerr<<"rank: "<<last->rank<<std::endl;
-				std::cerr<<"rank it: "<<it->second->rank<<std::endl;
+//				std::cerr<<"CNT: "<<last->count<<std::endl;
+//				std::cerr<<"CNT it: "<<it->second->count<<std::endl;
+//				std::cerr<<"rank: "<<last->rank<<std::endl;
+//				std::cerr<<"rank it: "<<it->second->rank<<std::endl;
 				change = it->second;
 			}
 		}
 		
-		std::cerr<<"Test: "<<last<<std::endl;
-		std::cerr<<"Test2: "<<change<<std::endl;
+//		std::cerr<<"Test: "<<last<<std::endl;
+//		std::cerr<<"Test2: "<<change<<std::endl;
 		if(last->parent != change && last != change)
 		{
 			T_NODE_PTR tmp = last->parent;
 			int64_t tmpRank = last->rank;
 			int32_t tmpLevel = last->level;
 					
-			std::cerr<<"TestIN"<<std::endl;
+//			std::cerr<<"TestIN"<<std::endl;
 			
 			if(last->parent->rightChild == last){
 				last->parent->rightChild = change;
-				change->code = (last->parent->code << 1) + 1;
 			}
 			else{
 				last->parent->leftChild = change;
-				change->code = (last->parent->code << 1) + 0;				
 			}
 			
-			std::cerr<<"TestSWAP1"<<std::endl;
+//			std::cerr<<"TestSWAP1"<<std::endl;
 			
 			if(change->parent->rightChild == change){
 				change->parent->rightChild = last;
-				last->code = (change->parent->code << 1) + 1;
 			}
 			else{
 				change->parent->leftChild = last;
-				last->code = (change->parent->code << 1) + 0;				
 			}
 			
 
-			std::cerr<<"TestSWAP2"<<std::endl;
+//			std::cerr<<"TestSWAP2"<<std::endl;
 
 			last->parent = change->parent;
 			last->rank = change->rank;
@@ -250,21 +246,20 @@ void updateTree(int64_t symbol, std::map<int,T_NODE_PTR> &lists)
 			change->parent = tmp;
 			change->rank = tmpRank;
 		
-			last->level = last->parent->level + 1;
-			std::cerr<<"Last: "<<last->level<<std::endl;
-			change->level = change->parent->level + 1;
-			std::cerr<<"change: "<<change->level<<std::endl;
+//			last->level = last->parent->level + 1;
+//			change->level = change->parent->level + 1;
+			
+			updateCode(&last->parent);
+			updateCode(&change->parent);
 		}
 		
-		std::cerr<<"Test3"<<std::endl;
+//		std::cerr<<"Test3"<<std::endl;
 		
 		last->count++;
-		if(last->parent == NULL)
-			updateCode(&last);
+//		if(last->parent == NULL)
+//			updateCode(&last);
 		last = last->parent;
 		x++;
-		if(last == NULL)
-			std::cerr<<"Nasrat"<<std::endl;
 	}
 	
 }
@@ -287,40 +282,40 @@ void updateCode(T_NODE_PTR *tree)
 		root->rightChild->level = root->rightChild->parent->level + 1;	
 		updateCode(&root->rightChild);
 	}
-	
 }
 
 	
 
 // http://stackoverflow.com/questions/699968/display-the-binary-representation-of-a-number-in-c
 // Převzato
-char *getBinaryCode (int16_t val, char *buff, int32_t sz) {
-    char *pbuff = buff;
-
-    /* Must be able to store one character at least. */
-    if (sz < 1) return NULL;
-
-    /* Special case for zero to ensure some output. */
-    if (val == 0) {
-        *pbuff++ = '0';
-        *pbuff = '\0';
-        return buff;
-    }
-
-    /* Work from the end of the buffer back. */
-    pbuff += sz;
-    *pbuff-- = '\0';
-
-    /* For each bit (going backwards) store character. */
-    while (val != 0) {
-        if (sz-- == 0) return NULL;
-        *pbuff-- = ((val & 1) == 1) ? '1' : '0';
-
-        /* Get next bit. */
-        val >>= 1;
-    }
-    return pbuff+1;
-}
+//int16_t getBinaryCode (int16_t val, int8_t *buff, int32_t sz) {
+//    int8_t *pbuff = buff;
+//
+//    /* Must be able to store one character at least. */
+//    if (sz < 1) return NULL;
+//
+//    /* Special case for zero to ensure some output. */
+//    if (val == 0) {
+//		for(int x = 1; x <= sz; x++)
+//			*pbuff++ = '0';
+//        *pbuff = '\0';
+//        return buff;
+//    }
+//
+//    /* Work from the end of the buffer back. */
+//    pbuff += sz;
+//    *pbuff-- = '\0';
+//
+//    /* For each bit (going backwards) store character. */
+//    while (val != 0) {
+//        if (sz-- == 0) return NULL;
+//        *pbuff-- = ((val & 1) == 1) ? '1' : '0';
+//
+//        /* Get next bit. */
+//        val >>= 1;
+//    }
+//    return pbuff+1;
+//}
 
 // Princip algoritmu
 // 1:  begin
@@ -344,6 +339,25 @@ char *getBinaryCode (int16_t val, char *buff, int32_t sz) {
 //19:      end
 //20:  end
 
+void printBuffer(FILE *file, T_BUFFER *buffer){
+	std::cerr<<"Zapisuju"<<std::endl;
+	fprintf(file,"%c",buffer->buffer);
+	std::cerr<<"výstup: "<<buffer->buffer<<std::endl;
+	buffer->buffer = 0;
+	buffer->position = 0;
+}
+
+void encodeSymbol(int16_t symbol, int32_t level, T_BUFFER *buffer, FILE *outputFile)
+{
+	for(int x = 1; x <= level; x++){
+		buffer->buffer = symbol << 1;
+		buffer->position++;
+		if(buffer->position == 8)
+			printBuffer(outputFile,buffer);
+	}
+}
+
+
 /* Nazev:
  *   AHEDEncoding
  * Cinnost:
@@ -362,7 +376,11 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
 	if(!treeInit(&huffmanTree))
 		exit(AHEDFail);
 	
-//	u_char *output;
+	T_BUFFER buffer;
+	buffer.buffer = 0;
+	buffer.position = 0;
+	
+	u_char *output = 0;
 	
 //	T_NODE_PTR nodes[];
 	
@@ -383,41 +401,67 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
 		if (nodes.find(ch) == nodes.end()){
 			// NOT found
 			if(ahed->uncodedSize != 0){
-//				char *buffer = new char[nodes[ESC]->level+1];
-//				std::cerr<<"Code: "<<nodes[ESC]->code<<std::endl;
-//				std::cerr<<"Level: "<<nodes[ESC]->level<<std::endl;
-//				getBinaryCode(nodes[ESC]->code,buffer,nodes[ESC]->level);
+				encodeSymbol(nodes[ESC]->code,nodes[ESC]->level,&buffer,outputFile);
+//				for(int x = 1; x <= nodes[ESC]->level; x++){
+//					buffer.buffer = nodes[ESC]->code << 1;
+//					buffer.position++;
+//					if(buffer.position == 8)
+//						printBuffer(outputFile,&buffer);
+//				}
 			}
 			std::cerr<<"Přidávám: "<<ch<<std::endl;
 			// Vytvorim novy node
 			createNewNode(nodes,ch);
 			
-//			printTree(huffmanTree);
+			std::cerr<<"Code: "<<nodes[ESC]->code<<std::endl;
+			std::cerr<<"Level: "<<nodes[ESC]->level<<std::endl;
 			
-			// Aktualizuju strom
-//			updateTree(ch,nodes);
+			encodeSymbol(ch,8,&buffer,outputFile);
+//			for(int x = 1; x <= 8; x++){
+//				buffer.buffer = ch << 1;
+//				buffer.position++;
+//				if(buffer.position == 8)
+//					printBuffer(outputFile,&buffer);
+//			}			
+			
+			std::cerr<<"Buff znak: "<<std::bitset<8>(ch)<<std::endl;
 			
 		} else {
-		// found
+			std::cerr<<"Mělo by být zapsáno: "<<ch<<std::endl;
+//			char *buffer = new char[nodes[ch]->level+1];
+			std::cerr<<"Code: "<<nodes[ch]->code<<std::endl;
+			std::cerr<<"Level: "<<nodes[ch]->level<<std::endl;
+			
+			encodeSymbol(nodes[ch]->code,nodes[ch]->level,&buffer,outputFile);
+			
+//			for(int x = 1; x <= nodes[ch]->level; x++){
+//				buffer.buffer = nodes[ch]->code << 1;
+//				buffer.position++;
+//				if(buffer.position == 8)
+//					printBuffer(outputFile,&buffer);
+//			}
 		}
 		// Aktualizuju strom
 		updateTree(ch,nodes);
 		ahed->uncodedSize++;
-		
-//		
-//		std::map<int,T_NODE_PTR>::iterator it;
-//		// Iteruju pres vsechny vlozene uzly
-//		for(it = nodes.begin(); it != nodes.end(); it++)
-//		{
-//			if(it->second->parent != NULL)
-//				std::cerr<<"Key: "<<it->first<<" code: "<<it->second->code<<" parent symbol: "<<it->second->parent->symbol<<" borther: "<<it->second->parent->rightChild->code<<" : "<<it->second->parent->leftChild->code<<std::endl;
-//			else
-//				std::cerr<<"Key: "<<it->first<<" code: "<<it->second->code<<std::endl;
-//		}			
-		
-//		std::cerr<<"UncodedSize: "<<ahed->uncodedSize<<std::endl;
 	}
-//	updateCode(&huffmanTree);
+		
+	// EOF
+	encodeSymbol(nodes[ESC]->code,nodes[ESC]->level,&buffer,outputFile);
+//	for(int x = 1; x <= nodes[ESC]->level; x++){
+//		buffer.buffer = nodes[ESC]->code << 1;
+//		buffer.position++;
+//		if(buffer.position == 8)
+//			printBuffer(outputFile,&buffer);
+//	}
+	
+	// Zarovnani bajtu
+	while(buffer.position != 8){
+		buffer.buffer = 0 << 1;
+		buffer.position++;
+	}
+	printBuffer(outputFile,&buffer);
+	
 	printf("\n\n\n");
 	printTree(huffmanTree);
 	

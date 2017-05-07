@@ -72,9 +72,15 @@ PARAMS getParams (int argc, char *argv[], PARAMS params)
 				cerr<<"Otevřen soubor"<<endl;
 				break;
 			case 'o':
+				if((params.output = fopen(optarg,"w+")) == NULL){
+					exit(AHEDFail);
+				}
 //				strcpy(params.outputFile, optarg);
 				break;
 			case 'l':
+				if((params.log = fopen(optarg,"w+")) == NULL){
+					exit(AHEDFail);
+				}				
 //				strcpy(params.logFile, optarg);
 				break;
 			case 'c':
@@ -118,7 +124,7 @@ int main(int argc, char **argv)
 	ahed.codedSize = 0;
 	ahed.uncodedSize = 0;
 	
-	AHEDEncoding(&ahed,params.input,stdout);
+	AHEDEncoding(&ahed,params.input,params.output);
 	
 	
 	fclose(params.input);

@@ -45,6 +45,11 @@ typedef struct T_NODE {
 } *T_NODE_PTR;
 
 
+typedef struct{
+	int8_t buffer;
+	int8_t position;
+} T_BUFFER;
+
 
 bool treeInit(T_NODE_PTR* root);
 void dispose (T_NODE_PTR *root);
@@ -52,7 +57,7 @@ void dispose (T_NODE_PTR *root);
 std::string getBinaryCode(int16_t n);
 void updateCode(T_NODE_PTR *root);
 
-char *getBinaryCode (int16_t val, char *buff, int32_t sz);
+int8_t *getBinaryCode (int16_t val, int8_t *buff, int32_t sz);
 
 int16_t parseSymbol(char symbol);
 /* Nazev:
